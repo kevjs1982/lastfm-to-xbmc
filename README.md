@@ -25,3 +25,4 @@ Start > Run > Cmd [ENTER]
 c:\xampp\php\php.exe -c c:\xampp\php\php.ini -f c:\lastfm-to-xbmc\last_fm_to_xbmc.php 
 (or if you placed in c:\lastfm-to-xbmc\ double click runme.bat)
 
+See the Wiki <a href="https://github.com/kevjs1982/lastfm-to-xbmc/wiki"> For more information</a>
