@@ -11,9 +11,13 @@ Getting Started
 Windows
 =======
 
+Get an API Key from Last FM http://www.last.fm/api/account (the secret isn't needed).
+
 Download and install XAMPP (these instructions assume you installed to c:\xampp) - No need to install anything as a service
 
-Edit c:\xampp\php\php.ini and remove the ";" in front of "extension=php_curl.dll"
+Edit c:\xampp\php\php.ini - 
+	remove the ";" in front of "extension=php_curl.dll"
+	Change "date.timezone" to be the correct timezone - e.g. "Europe/London" for England.
 
 Download this repository from github and extract to somewhere easy to remember (e.g. c:\lastfm2xbmc\)
 

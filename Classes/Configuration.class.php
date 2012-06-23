@@ -106,6 +106,7 @@ class Configuration
 		if ($match !== false)
 		{
 			$this->configuration['xbmc'] = array('MyMusic'=>$match);
+			copy($match,$this->BASE_DIR . Configuration::USER_DATA . $S . "backup-MyMusic." . date('Y-m-d_His') . ".db");
 			Helper::WriteIniFile($this->configuration,$this->BASE_DIR . Configuration::USER_CONF);
 		}
 		else

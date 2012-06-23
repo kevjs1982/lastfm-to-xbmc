@@ -2,6 +2,8 @@
 
 class Helper
 {
+
+	
 	public static function WriteIniFile($array, $file)
 	{
 		$res = array();

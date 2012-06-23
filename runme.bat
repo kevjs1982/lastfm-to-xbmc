@@ -1,1 +1,1 @@
-c:\xampp\php\php.exe -c c:\xampp\php\php.ini -f e:\Documents\GitHub\lastfm-to-xbmc\last_fm_to_xbmc.php 
+c:\xampp\php\php.exe -c c:\xampp\php\php.ini c:\lastfm-to-xbmc\last_fm_to_xbmc.php 
