@@ -16,7 +16,13 @@ class Configuration
 		
 		$this->ReadConfiguration();
 		
-		$this->FindMyMusicDatabase();
+		if (	!isset($this->configuration['xbmc']['MyMusic'])		||
+				$this->configuration['xbmc']['MyMusic'] == ""		||
+				$this->configuration['xbmc']['MyMusic'] == 'INSERT PATH HERE'
+			)
+		{
+			$this->FindMyMusicDatabase();
+		}
 		
 		$this->CreateUpdateCacheDatabase();
 		
@@ -100,7 +106,7 @@ class Configuration
 		}
 		elseif ( isset($_SERVER['HOME'])) // Linux
 		{
-			$match = $this->FindMyMusicDatabaseInFolder($_SERVER['APPDATA'] . ".xbmc{$S}userdata{$S}Database{$S}");
+			$match = $this->FindMyMusicDatabaseInFolder($_SERVER['HOME'] . ".xbmc{$S}userdata{$S}Database{$S}");
 		}
 		
 		if ($match !== false)
