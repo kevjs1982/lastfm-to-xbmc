@@ -1,7 +1,7 @@
 <?php
 class Strings
 {
-	function Debug($message,$always = false)
+	public static function Debug($message,$always = false)
 	{
 		if (DEBUG || $always)
 		{
@@ -9,7 +9,7 @@ class Strings
 		}
 	}
 	
-	function StatusMessage($message,$status = false)
+	public static function StatusMessage($message,$status = false)
 	{
 		$message = Strings::TruncateAndPad($message,68) . " ";
 		if ($status === false)
@@ -22,18 +22,18 @@ class Strings
 			echo "{$message}{$status}" . PHP_EOL;
 		}
 	}
-	function Status($status)
+	public static function Status($status)
 	{
 		$status  = "[ " . Strings::TruncateAndPad($status,8,STR_PAD_BOTH) . " ]";
 		echo "{$status}" . PHP_EOL;
 	}
 	
-	function TruncateAndPad($message,$length,$pad=STR_PAD_RIGHT)
+	public static function TruncateAndPad($message,$length,$pad=STR_PAD_RIGHT)
 	{
 		return str_pad(substr($message,0,$length),$length," ",$pad);
 	}
 	
-	function PromptForInput($question,$valid_answers,$default,$min_len = 5)
+	public static function PromptForInput($question,$valid_answers,$default,$min_len = 5)
 	{
 		$valid = false;
 		$my_answer = "";
@@ -68,32 +68,32 @@ class Strings
 	}
 	
 	
-	public function AlphaNumericSpacesExtended($string)
+	public static  function AlphaNumericSpacesExtended($string)
 	{
 		return self::Clean("/[^a-zA-Z0-9_-\s]/", $string);
 	}
 	
-	public function AlphaNumericExtended($string)
+	public static  function AlphaNumericExtended($string)
 	{
 		return self::Clean("/[^a-zA-Z0-9_\-]/", $string);
 	}
 
-	public function AlphaNumeric($string)
+	public static  function AlphaNumeric($string)
 	{
 		return self::Clean("/[^a-zA-Z0-9]/", $string);
 	}
 	
-	public function AlphaNumericSpaces($string)
+	public static  function AlphaNumericSpaces($string)
 	{
 		return self::Clean("/[^a-zA-Z0-9\s]/", $string);
 	}
 	
-	private function Clean($preg,$string)
+	public static  function Clean($preg,$string)
 	{
 		return preg_replace($preg, "", $string);
 	}
 	
-	public function RomanNumber($num)
+	public static  function RomanNumber($num)
 	{
 		// Make sure that we only use the integer portion of the value
 		$n = intval($num);
@@ -127,6 +127,13 @@ class Strings
 		}
 		// The Roman numeral should be built, return it
 		return $result;
+	}
+	
+	public static function ToFile($string,$file)
+	{
+		$fh = fopen($file, 'w');
+		fwrite($fh, $string);
+		fclose($fh);
 	}
 }
 ?>

@@ -8,9 +8,10 @@ class XBMC
 	}
 	function Find($artist,$title)
 	{
-		$this->db->performQuery("SELECT idSong, S.idArtist, strTitle, lastplayed, iTimesPlayed, A.strArtist
+		$this->db->performQuery("SELECT idSong, S.idArtist, strTitle, lastplayed, iTimesPlayed, A.strArtist, strPath, strFileName
 								FROM song S
 								JOIN artist A ON A.idArtist = S.idArtist
+								JOIN path P ON P.idPath = S.idPath
 								WHERE strArtist = :a COLLATE NOCASE AND strTitle = :t COLLATE NOCASE",array('a'=>$artist,'t'=>$title));
 		return $this->db->results();
 	}
