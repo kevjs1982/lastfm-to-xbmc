@@ -1,10 +1,12 @@
 <?php
-	$options = getopt("",array('skip-last-fm','debug'));
+	$options = getopt("",array('skip-last-fm','debug','skip-xbmc','skip-playlists','skip-tz-check'));
 	// Flick some switches
 	if (isset($options['debug']))			{	define ('DEBUG', true );			}else{	define ('DEBUG', false );			}
 	if (isset($options['skip-last-fm']))	{	define ('REFRESH_LAST_FM', false );	}else{	define ('REFRESH_LAST_FM', true );	}
 	if (isset($options['skip-xbmc']))		{	define ('REFRESH_XBMC', false );	}else{	define ('REFRESH_XBMC', true );		}
-	
+	if (isset($options['skip-playlists']))		{	define ('REFRESH_PLAYLISTS', false );	}else{	define ('REFRESH_PLAYLISTS', true );		}
+	if (isset($options['skip-tz-check']))		{	define ('SKIP_TZ_CHECK', true );	}else{	define ('SKIP_TZ_CHECK', false );		}
+
 	if (DEBUG)
 	{
 		error_reporting(E_ALL);
@@ -20,12 +22,15 @@
 	echo Strings::TruncateAndPad("+------------------------------------------------------------------------------+",80) . PHP_EOL;
 	echo PHP_EOL;
 	Strings::Debug("Your timezone is set to " . date_default_timezone_get() , true);
-	$tzok = Strings::PromptForInput("Is this correct? [Y/n]",array('y','n'),'y',1);
-	if ($tzok == 'n')
-	{
-		die("Please amend your local timezone in php.ini" . PHP_EOL);
-	}
 	
+	if (SKIP_TZ_CHECK == false)
+	{
+		$tzok = Strings::PromptForInput("Is this correct? [Y/n]",array('y','n'),'y',1);
+		if ($tzok == 'n')
+		{
+			die("Please amend your local timezone in php.ini" . PHP_EOL);
+		}
+	}
 	
 	$local_timezone = new datetimezone(date_default_timezone_get());
 	
@@ -90,11 +95,11 @@
 		echo Strings::TruncateAndPad("+------------------------------------------------------------------------------+",80) . PHP_EOL;
 	}
 	
-	
+	$xbmc = new XBMC($config->configuration['xbmc']['MyMusic']);
 	if (REFRESH_XBMC)
 	{
 		// Select all titles from the Last FM Cache
-		$xbmc = new XBMC($config->configuration['xbmc']['MyMusic']);
+		
 		// Get all the combos...
 		$config->cache->performQuery("
 			SELECT 
@@ -129,6 +134,8 @@
 		}
 		
 		
+		
+		
 	}
 	else
 	{
@@ -138,6 +145,20 @@
 		echo Strings::TruncateAndPad("+------------------------------------------------------------------------------+",80) . PHP_EOL;
 	}
 	
+	
+	if (REFRESH_PLAYLISTS)
+	{
+		for($year=2000;$year<=date('Y');$year++)
+		{
+			$config->GetTop100($xbmc,$year);
+		}
+	}
+	else
+	{
+		echo Strings::TruncateAndPad("+------------------------------------------------------------------------------+",80) . PHP_EOL;
+		echo Strings::TruncateAndPad("+ SKIPPING Playlists Update!                                                   +",80) . PHP_EOL;
+		echo Strings::TruncateAndPad("+------------------------------------------------------------------------------+",80) . PHP_EOL;
+	}
 	
 		// populate it with common aliases
 	

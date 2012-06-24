@@ -23,6 +23,11 @@ class Configuration
 		{
 			$this->FindMyMusicDatabase();
 		}
+		else
+		{	
+			// Backup the database!
+			copy($this->configuration['xbmc']['MyMusic'],$this->BASE_DIR . Configuration::USER_DATA . DIRECTORY_SEPARATOR . "backup-MyMusic." . date('Y-m-d_His') . ".db");
+		}
 		
 		$this->CreateUpdateCacheDatabase();
 		
@@ -103,15 +108,20 @@ class Configuration
 		if ( isset($_SERVER['APPDATA'])) // Windows Vista
 		{
 			$match = $this->FindMyMusicDatabaseInFolder($_SERVER['APPDATA'] . "{$S}XBMC{$S}userdata{$S}Database{$S}");
+			$this->configuration['xbmc']['MusicPlaylists'] = $_SERVER['APPDATA'] . "XBMC{$S}userdata{$S}playlists{$S}music{$S}";
 		}
 		elseif ( isset($_SERVER['HOME'])) // Linux
 		{
 			$match = $this->FindMyMusicDatabaseInFolder($_SERVER['HOME'] . ".xbmc{$S}userdata{$S}Database{$S}");
+			$this->configuration['xbmc']['MusicPlaylists'] = $_SERVER['HOME'] . ".xbmc{$S}userdata{$S}playlists{$S}music{$S}";
 		}
 		
 		if ($match !== false)
 		{
-			$this->configuration['xbmc'] = array('MyMusic'=>$match);
+			$this->configuration['xbmc']['MyMusic'] = $match;
+			
+			
+			
 			copy($match,$this->BASE_DIR . Configuration::USER_DATA . $S . "backup-MyMusic." . date('Y-m-d_His') . ".db");
 			Helper::WriteIniFile($this->configuration,$this->BASE_DIR . Configuration::USER_CONF);
 		}
@@ -177,7 +187,54 @@ class Configuration
 	}
 	
 	
-	
+	public function GetTop100($xbmc,$year)
+	{
+		
+		$top_100_dir = $this->configuration['xbmc']['MusicPlaylists'] .DIRECTORY_SEPARATOR .  "Top 100 Of The Year" . DIRECTORY_SEPARATOR;
+		if (!file_exists($top_100_dir ))
+		{
+			mkdir($top_100_dir);
+			if (!file_exists($top_100_dir ))
+			{
+				die("Unable to make the top 100 playlist folder");
+			}
+		}
+		$start = new datetime("{$year}-01-01 00:00:00");
+		$start->setTimeZone(new DateTimeZone('UTC'));
+		$end   = new datetime("{$year}-12-31 23:59:59");
+		$end->setTimeZone(new DateTimeZone('UTC'));
+		$this->cache->performQuery("SELECT artist, title, COUNT(*) playcount
+				FROM LastFMCache 
+				WHERE date_uts BETWEEN :s AND :e
+				GROUP BY artist, title
+				ORDER BY COUNT(*) DESC
+				",array('s'=>$start->format('Y-m-d H:i:s'),'e'=>$end->format('Y-m-d H:i:s')));
+		$top100 = $this->cache->results();
+		Strings::Debug("$year : Found " . count($top100) . " Tracks",true);
+		$chart_pos = 1;
+		$file_contents = "";
+		if (count($top100) > 0)
+		{
+			Strings::Debug("\tNo. 1 : " . $top100[0]->artist  . " with " . $top100[0]->title,true);
+			$idx = 0;
+			while(($idx < count($top100)) && ($chart_pos <= 100))
+			{
+				$title = $top100[$idx];
+				$info = $xbmc->Find($title->artist,$title->title);
+				if (count($info) > 0)
+				{
+					Strings::Debug("\tNo. {$chart_pos} : " . $title->artist  . " with " . $title->title,true);
+					$fn = $info[0]->strPath . $info[0]->strFileName;
+					$file_contents .= $fn . PHP_EOL;
+					$chart_pos++;
+				}
+				$idx++;
+			}
+			echo "{$top_100_dir}{$year}.m3u";
+			Strings::ToFile($file_contents,"{$top_100_dir}{$year}.m3u");
+		}
+		
+	}
 	
 	
 	
